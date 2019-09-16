@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>sdk.cmpcontact</groupId>
-    <artifactId>root</artifactId>
+    <artifactId>cmp</artifactId>
     <version>1.0</version>
     <packaging>war</packaging>
 
@@ -86,7 +86,7 @@
     </dependencies>
 
     <build>
-        <finalName>root</finalName>
+        <finalName>cmp</finalName>
         <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
             <plugins>
                 <plugin>
