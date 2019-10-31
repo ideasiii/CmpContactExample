@@ -2,11 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="66d00482-4122-40dc-95bf-6cd5cce60324" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/guide/CmpContact-1.0.jar" beforeDir="false" afterPath="$PROJECT_DIR$/guide/CmpContact-1.0.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/guide/maven_install_CmpContact-1.0jar.txt" beforeDir="false" afterPath="$PROJECT_DIR$/guide/maven_install_CmpContact-1.0jar.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/api/Contact.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/api/Contact.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/api/ErrorCode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/api/ErrorCode.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -47,14 +48,15 @@
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main/java/api" />
       <recent name="$PROJECT_DIR$/src/main/java" />
       <recent name="$PROJECT_DIR$/src/main/test" />
       <recent name="$PROJECT_DIR$/src/main/java/lib" />
       <recent name="$PROJECT_DIR$/jetty/webapps" />
-    </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/src/main" />
     </key>
   </component>
   <component name="RunDashboard">

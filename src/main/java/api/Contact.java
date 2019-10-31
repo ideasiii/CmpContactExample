@@ -2,85 +2,115 @@ package api;
 
 import org.json.JSONObject;
 
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
-import cmp.client.ContactClient;
-import common.Controller;
+import api.cmp.client.ContactClient;
+import api.common.Controller;
 
-@Path("/deidentify")
+@Path("/client")
 @Produces("application/json;charset=utf8")
 public class Contact
 {
-    final private String strJSON =
-            "{  \n" + "   \"file_info\":{  \n" + "      \"src_type\":0,\n" + "      \"path\":\"C" +
-                    ":/Users/R16026/Git/DataAnonymization/data/input/bankSimData_8000000.csv\"," +
-                    "\n" + "      \"encoding\":\"UTF-8\",\n" + "      \"header\":\"true\"\n" + " " +
-                    "  },\n" + "   \"field_info\":[  \n" + "      {  \n" + "         " +
-                    "\"column_name\":\"deposit\",\n" + "         \"column_type\":\"integer\",\n" + "         \"de_id_info\":[  \n" + "            {  \n" + "               \"method\":\"internalization\",\n" + "               \"target\":\"auto\",\n" + "               \"target_info\":{  \n" + "                  \"separate_number\":5\n" + "               }\n" + "            }\n" + "         ]\n" + "      },\n" + "      {  \n" + "         \"column_name\":\"income\",\n" + "         \"column_type\":\"integer\",\n" + "         \"de_id_info\":[  \n" + "            {  \n" + "               \"method\":\"internalization\",\n" + "               \"target\":\"auto\",\n" + "               \"target_info\":{  \n" + "                  \"separate_number\":5\n" + "               }\n" + "            }\n" + "         ]\n" + "      },\n" + "      {  \n" + "         \"column_name\":\"login_time\",\n" + "         \"column_type\":\"string\",\n" + "         \"de_id_info\":[  \n" + "            {  \n" + "               \"method\":\"upgrading\",\n" + "               \"target\":\"default\",\n" + "               \"target_info\":{  \n" + "                  \"transform_type\":\"default\",\n" + "                  \"before_date_format\":\"yyyy/mm/dd\",\n" + "                  \"after_date_format\":\"yyyy/mm\"\n" + "               }\n" + "            }\n" + "         ]\n" + "      },\n" + "      {  \n" + "         \"column_name\":\"consumption\",\n" + "         \"column_type\":\"string\",\n" + "         \"de_id_info\":[  \n" + "            {  \n" + "               \"method\":\"upgrading\",\n" + "               \"target\":\"default\",\n" + "               \"target_info\":{  \n" + "                  \"transform_type\":\"default\",\n" + "                  \"before_date_format\":\"yyyy-mm-dd\",\n" + "                  \"after_date_format\":\"yyyy/mm\"\n" + "               }\n" + "            }\n" + "         ]\n" + "      }\n" + "   ],\n" + "   \"finish\":{  \n" + "      \"callback\":\"ftp\",\n" + "      \"URL\":\"http://frontend/callback?file=ftp://ssss.ssss\"\n" + "   }\n" + "}";
+    final int PORT = 1414;
     
-    @GET
-    public String contact(@QueryParam("ip") String strIP)
-    {
-        int nResult = 0;
-        ContactClient contactClient = new ContactClient(strIP, 1414, false);
-        if (-1 != contactClient.start())
-        {
-            JSONObject jsonWord = new JSONObject(strJSON);
-            Controller.CMP_PACKET resp = new Controller.CMP_PACKET();
-            nResult = contactClient.send(jsonWord, resp);
-            contactClient.stop();
-            if (-1 != nResult)
-            {
-                return "Socket Send OK, Receive:" + resp.cmpBody;
-            }
-        }
-        return "cmp contact test Fail";
-    }
-    
+    // example: http://127.0.0.1:8080/cmp/client/deidentify?ip=127.0.0.1&data={"key":"value"}
     @POST
+    @Path("/deidentify")
     public String deidentify(@QueryParam("ip") String strIP, @QueryParam("data") String strData)
     {
-        int nResult = 0;
+        return send(strIP,strData,Controller.deidentify_request);
+    }
+    
+    // example: http://127.0.0.1:8080/cmp/client/status?ip=127.0.0.1
+    @POST
+    @Path("/status")
+    public String status(@QueryParam("ip") String strIP)
+    {
+       return send(strIP,null,Controller.status_request);
+    }
+    
+    // example: http://127.0.0.1:8080/cmp/client/option?ip=127.0.0.1&data={"key":"value"}
+    @POST
+    @Path("/option")
+    public String option(@QueryParam("ip") String strIP, @QueryParam("data") String strData)
+    {
+        return send(strIP,strData,Controller.option_request);
+    }
+    
+    private String send(String strIP, String strData,int nCommand)
+    {
+        System.out.println("[Contact] send IP = " + strIP + " Data = " + strData + " Command = " + nCommand);
         JSONObject jresponse = new JSONObject();
-        ContactClient contactClient = new ContactClient(strIP, 1414, false);
-        if (-1 != contactClient.start())
+        ContactClient contactClient = new ContactClient(strIP, PORT, false);
+        JSONObject jsonData = null;
+        if(null != strData && 0 < strData.length())
         {
-            JSONObject jsonData = new JSONObject(strData);
+            jsonData = new JSONObject(strData);
             System.out.println(strData);
-            if(jsonData.isEmpty())
-            {
-                jresponse.put("code",ErrorCode.ERROR_JSON);
-                jresponse.put("message","Invalid JSON Data");
-            }
-            else
+        }
+        
+        try
+        {
+            if (-1 != contactClient.start())
             {
                 Controller.CMP_PACKET resp = new Controller.CMP_PACKET();
-                nResult = contactClient.send(jsonData, resp);
+                int nResult = 0;
+                switch(nCommand)
+                {
+                    case Controller.deidentify_request:
+                        if (null == jsonData || jsonData.isEmpty())
+                        {
+                            jresponse.put("code", ErrorCode.ERROR_JSON);
+                            jresponse.put("message", "Invalid JSON Data");
+                        }
+                        else
+                        {
+                            nResult = contactClient.deidentify(jsonData, resp);
+                        }
+                        break;
+                    case Controller.status_request:
+                        nResult = contactClient.status(resp);
+                        break;
+                    case Controller.option_request:
+                        if (null == jsonData || jsonData.isEmpty())
+                        {
+                            jresponse.put("code", ErrorCode.ERROR_JSON);
+                            jresponse.put("message", "Invalid JSON Data");
+                        }
+                        else
+                        {
+                            nResult = contactClient.option(jsonData, resp);
+                        }
+                        break;
+                }
                 contactClient.stop();
                 if (-1 != nResult)
                 {
-                    return "Socket Send OK, Receive:" + resp.cmpBody;
+                    jresponse.put("code", ErrorCode.ERROR_SUCCESS);
+                    jresponse.put("message", "Socket Send OK, Receive:" + resp.cmpBody);
+                }
+                else
+                {
+                    jresponse.put("code", ErrorCode.ERROR_SEND);
+                    jresponse.put("message", "Socket Send Fail, Receive:" + resp.cmpBody);
                 }
             }
+            else
+            {
+                jresponse.put("code", ErrorCode.ERROR_CONNECT);
+                jresponse.put("message", "Server connect fail");
+            }
         }
-        else
+        catch(Exception e)
         {
-            jresponse.put("code", ErrorCode.ERROR_CONNECT);
-            jresponse.put("message","Server connect fail");
+            jresponse.put("code", ErrorCode.ERROR_EXCEPTION);
+            jresponse.put("message", e.getMessage());
         }
+        
         return jresponse.toString();
-    }
-    
-    @POST
-    @Path("/status")
-    public String status(@QueryParam("ip") String strIP, @QueryParam("data") String strData)
-    {
-        return "status";
     }
     
 }

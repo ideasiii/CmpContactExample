@@ -78,11 +78,6 @@
             <version>20180813</version>
         </dependency>
 
-        <dependency>
-            <groupId>cmp.client</groupId>
-            <artifactId>CmpContact</artifactId>
-            <version>1.0</version>
-        </dependency>
     </dependencies>
 
     <build>
